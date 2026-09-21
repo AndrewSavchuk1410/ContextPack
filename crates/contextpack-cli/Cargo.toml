@@ -1,0 +1,18 @@
+[package]
+name = "contextpack-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "contextpack"
+path = "src/main.rs"
+
+[dependencies]
+clap.workspace = true
+contextpack-core = { path = "../contextpack-core" }
+contextpack-render = { path = "../contextpack-render" }
+serde_json.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

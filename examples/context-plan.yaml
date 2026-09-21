@@ -1,0 +1,40 @@
+version: 1
+repository: .
+parent_pack: null
+
+traversal:
+  respect_gitignore: true
+  include_hidden: false
+  follow_symlinks: false
+  exclude:
+    - "**/ThirdParty/**"
+
+limits:
+  max_matches: 50
+  max_candidates: 50
+  max_evidence_lines: 400
+  max_evidence_bytes: 131072
+  max_query_evidence_bytes: 524288
+  max_pack_evidence_bytes: 2097152
+
+collect:
+  - id: repository-status
+    type: git
+    operation: status
+
+  - id: cpp-entrypoints
+    type: search
+    query: main(
+    mode: literal
+    paths: [src]
+    extensions: [.cpp, .h, .hpp]
+
+  - id: main-definition
+    type: symbol
+    name: main
+    language: cpp
+    roles: [definition]
+    kinds: [function]
+    paths: [src]
+    fallback: textual
+

@@ -1,0 +1,13 @@
+[package]
+name = "contextpack-render"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+contextpack-core = { path = "../contextpack-core" }
+serde.workspace = true
+serde_json.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

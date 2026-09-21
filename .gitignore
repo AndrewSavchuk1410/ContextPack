@@ -1,0 +1,5 @@
+/target/
+/dist/
+*.contextpack.md
+*.contextpack.json
+.DS_Store

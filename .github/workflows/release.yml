@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # rustup reads rust-toolchain.toml and installs its pinned toolchain.
+      - name: Use repository-pinned Rust toolchain
+        shell: pwsh
+        run: |
+          rustup show active-toolchain
+          cargo --version
+
+      - name: Verify tag matches package version
+        shell: pwsh
+        run: |
+          $version = (Select-String -LiteralPath Cargo.toml -Pattern '^version = "([^"]+)"$').Matches.Groups[1].Value
+          if ($env:GITHUB_REF_NAME -ne "v$version") {
+            throw "Tag $env:GITHUB_REF_NAME does not match workspace version v$version"
+          }
+
+      - name: Test workspace
+        run: cargo test --workspace --locked
+
+      - name: Package Windows x86_64 release
+        shell: pwsh
+        run: ./scripts/package.ps1
+
+      - name: Create GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $archive = "dist/contextpack-$env:GITHUB_REF_NAME-windows-x86_64.zip"
+          $executable = 'target/x86_64-pc-windows-msvc/release/contextpack.exe'
+          if (-not (Test-Path -LiteralPath $archive)) { throw "Missing release archive: $archive" }
+          if (-not (Test-Path -LiteralPath $executable)) { throw "Missing executable: $executable" }
+          gh release create $env:GITHUB_REF_NAME $archive $executable --verify-tag --generate-notes
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

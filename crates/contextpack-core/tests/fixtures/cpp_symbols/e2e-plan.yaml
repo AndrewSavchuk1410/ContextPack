@@ -1,0 +1,47 @@
+version: 1
+repository: .
+
+collect:
+  - id: header
+    type: file
+    path: include/model.hpp
+
+  - id: overload-text
+    type: search
+    query: overloaded
+    paths: [include, src]
+    extensions: [.hpp, .cpp]
+    context: { before: 1, after: 2 }
+
+  - id: put-definition
+    type: symbol
+    name: Box::put
+    language: cpp
+    roles: [definition]
+    kinds: [method]
+    paths: [src]
+    fallback: none
+
+  - id: unreal-begin-play-definition
+    type: symbol
+    name: BeginPlay
+    language: cpp
+    roles: [definition]
+    kinds: [function, method]
+    paths: [include, src]
+    fallback: none
+
+  - id: unreal-begin-play-declaration
+    type: symbol
+    name: BeginPlay
+    language: cpp
+    roles: [declaration]
+    kinds: [function, method]
+    paths: [include, src]
+    fallback: none
+
+  - id: focused-range
+    type: range
+    path: src/model.cpp
+    start_line: 1
+    end_line: 12
